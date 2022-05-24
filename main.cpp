@@ -42,9 +42,36 @@ void testExample() {
             std::deque<int>{205, 105},
             std::deque<int>{210, 125},
     };
+
+    // Print data
+    PRINT_TITLE("Source data")
+    for (std::deque<int> vector:data) {
+        for (int d:vector) {
+            std::cout << d << ", ";
+        }
+        std::cout << std::endl;
+    }
+
     VectorQuantizer vq(2, 4);
+    PRINT_TITLE("Start encoding")
     const std::deque<int> &encodedData = vq.encode(data, 0.05);
+
+    // Print data
+    PRINT_TITLE("Encode data")
+    for (int data:encodedData) {
+        std::cout << data << ", " << std::endl;
+    }
+
     const std::deque<std::deque<int>> &decodedData = vq.decode(encodedData);
+
+    // Print data
+    PRINT_TITLE("Decode data")
+    for (std::deque<int> vectors:decodedData) {
+        for (int d:vectors) {
+            std::cout << d << ", ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 void testImage(int argc, char **argv) {
