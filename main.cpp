@@ -111,7 +111,7 @@ void testImage(int argc, char **argv) {
     PRINT_TITLE("End of program")
 }
 
-void merge2SquareMat(const cv::Mat &dst, const std::deque<cv::Mat> &mats, int width) {
+void merge2SquareMat(const cv::Mat dst, const std::deque<cv::Mat> &mats, int width) {
     int rows = dst.rows / width;
     int cols = dst.cols / width;
     for (int y = 0; y < rows; ++y) {

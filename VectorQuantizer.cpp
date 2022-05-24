@@ -29,7 +29,7 @@ Vector VectorQuantizer::encode(std::deque<Vector> vectors, double endTrainRate) 
     return encodedValue;
 }
 
-void VectorQuantizer::generateCodeBook(std::deque<Vector> vectors, double endTrainRate) {
+void VectorQuantizer::generateCodeBook(std::deque<Vector> &vectors, double endTrainRate) {
     codeBook = randomSelectInitVectors(vectors);
     trainCodeBook(vectors, endTrainRate);
 }

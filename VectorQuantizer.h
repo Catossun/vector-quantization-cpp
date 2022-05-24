@@ -13,7 +13,7 @@ private:
 
     std::deque<Vector> randomSelectInitVectors(std::deque<Vector> &vectors);
 
-    void generateCodeBook(std::deque<Vector> vectors, double endTrainRate);
+    void generateCodeBook(std::deque<Vector> &vectors, double endTrainRate);
 
     std::map<int, Vector>
     classificationVectors(std::deque<Vector> &labelVectors, std::deque<Vector> &vectors);
