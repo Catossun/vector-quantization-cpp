@@ -3,7 +3,7 @@ project(VectorQuantization)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(${PROJECT_NAME} main.cpp VectorQuantizer.cpp VectorQuantizer.h)
+add_executable(${PROJECT_NAME} main.cpp VectorQuantizer.cpp)
 
 set(OpenCV_DIR "C:/opencv/build")
 find_package(OpenCV REQUIRED)
