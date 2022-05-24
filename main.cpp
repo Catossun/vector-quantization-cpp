@@ -19,20 +19,20 @@ int main(int argc, char **argv) {
 }
 
 void testExample() {
-    std::deque<std::deque<int>> data = {
-            std::deque<int>{135, 55},
-            std::deque<int>{145, 65},
-            std::deque<int>{165, 70},
-            std::deque<int>{170, 85},
-            std::deque<int>{180, 95},
-            std::deque<int>{185, 100},
-            std::deque<int>{205, 105},
-            std::deque<int>{210, 125},
+    std::deque<Vector> data = {
+            Vector{135, 55},
+            Vector{145, 65},
+            Vector{165, 70},
+            Vector{170, 85},
+            Vector{180, 95},
+            Vector{185, 100},
+            Vector{205, 105},
+            Vector{210, 125},
     };
 
     // Print data
     PRINT_TITLE("Source data")
-    for (std::deque<int> vector:data) {
+    for (Vector vector:data) {
         for (int d:vector) {
             std::cout << d << ", ";
         }
@@ -41,7 +41,7 @@ void testExample() {
 
     VectorQuantizer vq(2, 4);
     PRINT_TITLE("Start encoding")
-    const std::deque<int> &encodedData = vq.encode(data, 0.05);
+    const Vector &encodedData = vq.encode(data, 0.05);
 
     // Print data
     PRINT_TITLE("Encode data")
@@ -49,11 +49,11 @@ void testExample() {
         std::cout << data << ", " << std::endl;
     }
 
-    const std::deque<std::deque<int>> &decodedData = vq.decode(encodedData);
+    const std::deque<Vector> &decodedData = vq.decode(encodedData);
 
     // Print data
     PRINT_TITLE("Decode data")
-    for (std::deque<int> vectors:decodedData) {
+    for (Vector vectors:decodedData) {
         for (int d:vectors) {
             std::cout << d << ", ";
         }
@@ -72,7 +72,7 @@ void testImage(int argc, char **argv) {
     PRINT_TITLE("Converting image to vectors...")
     int squareWidth = 4;
     const std::deque<cv::Mat> rois = separateMat2Square(img, squareWidth);
-    const std::deque<std::deque<int>> vectors = flatAllMat(rois);
+    const std::deque<Vector> vectors = flatAllMat(rois);
     PRINT_FOOTER("Converting finished")
 
     PRINT_TITLE("Initializing vector quantizer...")
@@ -83,13 +83,13 @@ void testImage(int argc, char **argv) {
     PRINT_TITLE("Start training code book & Encoding vectors...")
     time_t startTime = time(nullptr);
     double endTrainRate = 0.05;
-    const std::deque<int> &indexes = vq.encode(vectors, endTrainRate);
+    const Vector &indexes = vq.encode(vectors, endTrainRate);
     time_t spendTime = time(nullptr) - startTime;
     std::cout << std::format("Run time(sec): {}", spendTime) << std::endl;
     PRINT_FOOTER("Training & Encoding finished")
 
     PRINT_TITLE("Decoding vectors...")
-    const std::deque<std::deque<int>> &decodeVectors = vq.decode(indexes);
+    const std::deque<Vector> &decodeVectors = vq.decode(indexes);
     const std::deque<cv::Mat> newRois = vectors2Mats(
             decodeVectors,
             cv::Size(squareWidth, squareWidth),
@@ -124,9 +124,9 @@ void merge2SquareMat(const cv::Mat &dst, const std::deque<cv::Mat> &mats, int wi
     }
 }
 
-std::deque<cv::Mat> vectors2Mats(const std::deque<std::deque<int>> &vectors, cv::Size matSize, int channels) {
+std::deque<cv::Mat> vectors2Mats(const std::deque<Vector> &vectors, cv::Size matSize, int channels) {
     std::deque<cv::Mat> mats;
-    for (const std::deque<int> &vector : vectors) {
+    for (const Vector &vector : vectors) {
         cv::Mat mat(matSize.height, matSize.width, CV_8UC(channels));
         vector2Mat(mat, vector);
         mats.push_back(mat);
@@ -134,7 +134,7 @@ std::deque<cv::Mat> vectors2Mats(const std::deque<std::deque<int>> &vectors, cv:
     return mats;
 }
 
-void vector2Mat(cv::Mat dst, const std::deque<int> &vector) {
+void vector2Mat(cv::Mat dst, const Vector &vector) {
     for (int y = 0; y < dst.rows; ++y) {
         uchar *row = dst.ptr(y);
         for (int x = 0; x < dst.cols; ++x) {
@@ -147,17 +147,17 @@ void vector2Mat(cv::Mat dst, const std::deque<int> &vector) {
     }
 }
 
-std::deque<std::deque<int>> flatAllMat(const std::deque<cv::Mat> &mats) {
-    std::deque<std::deque<int>> vectors;
+std::deque<Vector> flatAllMat(const std::deque<cv::Mat> &mats) {
+    std::deque<Vector> vectors;
     for (const cv::Mat &mat : mats) {
-        std::deque<int> vector = flatMat(mat);
+        Vector vector = flatMat(mat);
         vectors.push_back(vector);
     }
     return vectors;
 }
 
-std::deque<int> flatMat(const cv::Mat &mat) {
-    std::deque<int> vector;
+Vector flatMat(const cv::Mat &mat) {
+    Vector vector;
     for (int y = 0; y < mat.rows; ++y) {
         const uchar *row = mat.ptr(y);
         for (int x = 0; x < mat.cols; ++x) {

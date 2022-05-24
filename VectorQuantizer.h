@@ -2,36 +2,38 @@
 
 #include <deque>
 
+typedef std::deque<int> Vector;
+
 class VectorQuantizer {
 private:
     int codeBookSize = 0;
     int dim = 0;
     int trainTimes = 0;
-    std::deque<std::deque<int>> codeBook;
+    std::deque<Vector> codeBook;
 
-    std::deque<std::deque<int>> randomSelectInitVectors(std::deque<std::deque<int>> &vectors);
+    std::deque<Vector> randomSelectInitVectors(std::deque<Vector> &vectors);
 
-    void generateCodeBook(std::deque<std::deque<int>> vectors, double endTrainRate);
+    void generateCodeBook(std::deque<Vector> vectors, double endTrainRate);
 
-    std::map<int, std::deque<int>>
-    classificationVectors(std::deque<std::deque<int>> &labelVectors, std::deque<std::deque<int>> &vectors);
+    std::map<int, Vector>
+    classificationVectors(std::deque<Vector> &labelVectors, std::deque<Vector> &vectors);
 
-    double calculateAvgError(std::deque<std::deque<int>> &labelVectors, std::deque<std::deque<int>> &vectors,
-                             std::map<int, std::deque<int>> &indexTable);
+    double calculateAvgError(std::deque<Vector> &labelVectors, std::deque<Vector> &vectors,
+                             std::map<int, Vector> &indexTable);
 
-    int calculateDistance(std::deque<int> &vectorA, std::deque<int> &vectorB) const;
+    int calculateDistance(Vector &vectorA, Vector &vectorB) const;
 
-    std::deque<std::deque<int>>
-    calculateNewCodeBook(std::deque<std::deque<int>> &labelVectors, std::deque<std::deque<int>> &vectors,
-                         std::map<int, std::deque<int>> &indexTable);
+    std::deque<Vector>
+    calculateNewCodeBook(std::deque<Vector> &labelVectors, std::deque<Vector> &vectors,
+                         std::map<int, Vector> &indexTable);
 
-    void trainCodeBook(std::deque<std::deque<int>> &vectors, double endTrainRate);
+    void trainCodeBook(std::deque<Vector> &vectors, double endTrainRate);
 
 public:
 
     VectorQuantizer(int dim, int codeBookSize);
 
-    std::deque<int> encode(std::deque<std::deque<int>> vectors, double endTrainRate);
+    Vector encode(std::deque<Vector> vectors, double endTrainRate);
 
-    std::deque<std::deque<int>> decode(std::deque<int> indexes);
+    std::deque<Vector> decode(Vector indexes);
 };

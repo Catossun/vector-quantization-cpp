@@ -10,14 +10,14 @@ VectorQuantizer::VectorQuantizer(int dim, int codeBookSize) {
     this->codeBookSize = codeBookSize;
 }
 
-std::deque<int> VectorQuantizer::encode(std::deque<std::deque<int>> vectors, double endTrainRate) {
+Vector VectorQuantizer::encode(std::deque<Vector> vectors, double endTrainRate) {
     generateCodeBook(vectors, endTrainRate);
-    std::deque<int> encodedValue;
-    for (std::deque<int> vector: vectors) {
+    Vector encodedValue;
+    for (Vector vector: vectors) {
         int minDistanceIndex = 0;
         int minDistance = INT32_MAX;
         for (int i = 0; i < codeBookSize; ++i) {
-            std::deque<int> codeBookVector = codeBook[i];
+            Vector codeBookVector = codeBook[i];
             int distance = calculateDistance(codeBookVector, vector);
             if (distance < minDistance) {
                 minDistance = distance;
@@ -29,16 +29,16 @@ std::deque<int> VectorQuantizer::encode(std::deque<std::deque<int>> vectors, dou
     return encodedValue;
 }
 
-void VectorQuantizer::generateCodeBook(std::deque<std::deque<int>> vectors, double endTrainRate) {
+void VectorQuantizer::generateCodeBook(std::deque<Vector> vectors, double endTrainRate) {
     codeBook = randomSelectInitVectors(vectors);
     trainCodeBook(vectors, endTrainRate);
 }
 
-void VectorQuantizer::trainCodeBook(std::deque<std::deque<int>> &vectors, double endTrainRate) {
+void VectorQuantizer::trainCodeBook(std::deque<Vector> &vectors, double endTrainRate) {
     double trainRate = DBL_MAX;
     double lastAvgError = 0;
     while (true) {
-        std::map<int, std::deque<int>> vectorIndexTable = classificationVectors(codeBook, vectors);
+        std::map<int, Vector> vectorIndexTable = classificationVectors(codeBook, vectors);
         double avgError = calculateAvgError(codeBook, vectors, vectorIndexTable);
         trainRate = abs((avgError - lastAvgError) / avgError);
         std::cout << std::format("[{}] Train rate: {}", ++trainTimes, trainRate) << std::endl;
@@ -51,10 +51,10 @@ void VectorQuantizer::trainCodeBook(std::deque<std::deque<int>> &vectors, double
     }
 }
 
-std::deque<std::deque<int>> VectorQuantizer::randomSelectInitVectors(std::deque<std::deque<int>> &vectors) {
+std::deque<Vector> VectorQuantizer::randomSelectInitVectors(std::deque<Vector> &vectors) {
     if (codeBookSize == vectors.size()) return vectors;
 
-    std::deque<std::deque<int>> initVectors;
+    std::deque<Vector> initVectors;
 
     std::set<int> pickedIndexes;
 //    std::set<int> pickedIndexes = {0, 2, 3, 6}; // For example test
@@ -70,10 +70,10 @@ std::deque<std::deque<int>> VectorQuantizer::randomSelectInitVectors(std::deque<
     return initVectors;
 }
 
-std::map<int, std::deque<int>>
-VectorQuantizer::classificationVectors(std::deque<std::deque<int>> &labelVectors,
-                                       std::deque<std::deque<int>> &vectors) {
-    std::map<int, std::deque<int>> indexTable;
+std::map<int, Vector>
+VectorQuantizer::classificationVectors(std::deque<Vector> &labelVectors,
+                                       std::deque<Vector> &vectors) {
+    std::map<int, Vector> indexTable;
 
 
     for (int i = 0; i < vectors.size(); ++i) {
@@ -87,7 +87,7 @@ VectorQuantizer::classificationVectors(std::deque<std::deque<int>> &labelVectors
             }
         }
         if (indexTable.find(minDistanceLabelIndex) == indexTable.end()) {
-            indexTable.insert(std::pair<int, std::deque<int>>(minDistanceLabelIndex, std::deque<int>()));
+            indexTable.insert(std::pair<int, Vector>(minDistanceLabelIndex, Vector()));
         }
         indexTable.at(minDistanceLabelIndex).push_back(i);
     }
@@ -95,7 +95,7 @@ VectorQuantizer::classificationVectors(std::deque<std::deque<int>> &labelVectors
     return indexTable;
 }
 
-int VectorQuantizer::calculateDistance(std::deque<int> &vectorA, std::deque<int> &vectorB) const {
+int VectorQuantizer::calculateDistance(Vector &vectorA, Vector &vectorB) const {
     int distance = 0;
     for (int i = 0; i < vectorA.size(); ++i) {
         distance += pow(vectorA[i] - vectorB[i], 2);
@@ -104,11 +104,11 @@ int VectorQuantizer::calculateDistance(std::deque<int> &vectorA, std::deque<int>
 }
 
 double
-VectorQuantizer::calculateAvgError(std::deque<std::deque<int>> &labelVectors, std::deque<std::deque<int>> &vectors,
-                                   std::map<int, std::deque<int>> &indexTable) {
+VectorQuantizer::calculateAvgError(std::deque<Vector> &labelVectors, std::deque<Vector> &vectors,
+                                   std::map<int, Vector> &indexTable) {
     double avgError = 0;
 
-    for (const std::pair<int, std::deque<int>> entity : indexTable) {
+    for (const std::pair<int, Vector> entity : indexTable) {
         for (const int index: entity.second) {
             avgError += calculateDistance(labelVectors[entity.first], vectors[index]);
         }
@@ -119,13 +119,13 @@ VectorQuantizer::calculateAvgError(std::deque<std::deque<int>> &labelVectors, st
     return avgError;
 }
 
-std::deque<std::deque<int>>
-VectorQuantizer::calculateNewCodeBook(std::deque<std::deque<int>> &labelVectors, std::deque<std::deque<int>> &vectors,
-                                      std::map<int, std::deque<int>> &indexTable) {
-    std::deque<std::deque<int>> newCodeBook;
+std::deque<Vector>
+VectorQuantizer::calculateNewCodeBook(std::deque<Vector> &labelVectors, std::deque<Vector> &vectors,
+                                      std::map<int, Vector> &indexTable) {
+    std::deque<Vector> newCodeBook;
 
-    for (std::pair<int, std::deque<int>> entity:indexTable) {
-        std::deque<int> newVector;
+    for (std::pair<int, Vector> entity:indexTable) {
+        Vector newVector;
         for (int i = 0; i < dim; ++i) {
             int newValue = 0;
             for (int j = 0; j < entity.second.size(); ++j) {
@@ -140,11 +140,11 @@ VectorQuantizer::calculateNewCodeBook(std::deque<std::deque<int>> &labelVectors,
     return newCodeBook;
 }
 
-std::deque<std::deque<int>> VectorQuantizer::decode(std::deque<int> indexes) {
-    std::deque<std::deque<int>> decodedValue;
+std::deque<Vector> VectorQuantizer::decode(Vector indexes) {
+    std::deque<Vector> decodedValue;
 
     for (const int index : indexes) {
-        std::deque<int> vector = codeBook[index];
+        Vector vector = codeBook[index];
         decodedValue.push_back(vector);
     }
 
