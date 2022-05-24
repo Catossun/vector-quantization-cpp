@@ -26,7 +26,9 @@ void testImage(int argc, char **argv);
 void testExample();
 
 int main(int argc, char **argv) {
-//    testExample();
+    PRINT_TITLE("Run testExample()")
+    testExample();
+    PRINT_TITLE("Run testImage()")
     testImage(argc, argv);
     return 0;
 }
