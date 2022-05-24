@@ -80,6 +80,7 @@ void testImage(int argc, char **argv) {
     const cv::Mat &img = cv::imread(argv[1]);
 
     PRINT_TITLE("Show original image")
+    PRINT_FOOTER("Press any key to continue...")
     cv::imshow("Origin image", img);
     cv::waitKey();
 
@@ -118,8 +119,9 @@ void testImage(int argc, char **argv) {
 
     PRINT_TITLE("Show compressed image")
     cv::imshow("Compressed", decodeImg);
-
+    PRINT_FOOTER("Press ESC to exit")
     while (cv::waitKey(0) != ESC_KEY);
+
     cv::destroyAllWindows();
     PRINT_TITLE("End of program")
 }
