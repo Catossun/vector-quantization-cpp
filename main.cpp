@@ -3,27 +3,12 @@
 #include <format>
 #include <opencv2/opencv.hpp>
 #include "VectorQuantizer.h"
+#include "main.h"
 
 #define PRINT_TITLE(title) {std::cout << "\n========== " << title << " ==========" << std::endl;}
 #define PRINT_FOOTER(footer) {std::cout << "========== " << footer << " ==========" << std::endl;}
 
 static const int ESC_KEY = 27;
-
-std::deque<cv::Mat> separateMat2Square(const cv::Mat &mat, const int width);
-
-std::deque<std::deque<int>> flatAllMat(const std::deque<cv::Mat> &mats);
-
-std::deque<int> flatMat(const cv::Mat &mat);
-
-void merge2SquareMat(const cv::Mat &dst, const std::deque<cv::Mat> &mats, int width);
-
-std::deque<cv::Mat> vectors2Mats(const std::deque<std::deque<int>> &vectors, cv::Size matSize, int channels);
-
-void vector2Mat(cv::Mat dst, const std::deque<int> &vector);
-
-void testImage(int argc, char **argv);
-
-void testExample();
 
 int main(int argc, char **argv) {
     PRINT_TITLE("Run testExample()")
